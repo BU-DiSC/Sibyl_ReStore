@@ -32,7 +32,7 @@ from sibyl.src.hybridstorageenvironment import HybridStorageEnvironment
 from sibyl.src.trihybridstorage import TriHybridStorage
 from sibyl.src.trihybridstorageenvironment import TriHybridStorageEnvironment
 
-from sibyl.src.utils import compute_avg_return, create_recurrent_network, create_feedforward_network
+from sibyl.src.utils import compute_avg_return, create_recurrent_network, create_feedforward_network, print_IO_loggings
 import functools
 from tensorflow.keras import datasets, layers, models
 from tf_agents.networks import sequential
@@ -388,12 +388,16 @@ def main(args):
     #Saving the policy
     agent_policy = tf_agent.policy
     policy_saver.PolicySaver(agent_policy).save("sibyl_policy")
+    print("\n----- RL training Info -----")
     print('Number of Steps: ', env_steps.result().numpy())
     print('Number of Episodes: ', num_episodes.result().numpy())
     for i in range(len(train_metrics)):
                     print('{}: {}'.format(train_metrics[i].name, train_metrics[i].result().numpy()))
     print("Returns for evaluated episodes:",returns)
     print("Training loss:",total_loss)
+    # print the I/O Info
+    print("\n----- I/O eval Info -----")
+    print_IO_loggings(eval_env, tf_agent.policy)
     # Reset the train step
     tf_agent.train_step_counter.assign(0)
 

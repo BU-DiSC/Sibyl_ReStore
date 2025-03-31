@@ -555,73 +555,122 @@ class TriHybridStorage():
 
 
     def read(self,obs,memory_type):
-        latency = 0
-        deviceName = ""
+        # deviceName = ""
+        request_metadata=[]
         request=[]
         request.append(str(obs[0][0]))
         request.append(int(obs[0][1]))
         request.append(int(obs[0][2]))
+
+        if(memory_type==1):
+            deviceName = "fastSSD"
+        elif(memory_type==0):
+            deviceName = "slowSSD"
+        elif(memory_type==2):
+            deviceName = "midSSD"
+
         VBA = str(request[0])
+        newSize = request[1]
+        sizeToMove = newSize
+        # if VBA(offset) already in _mapping_table, update mapping
         if VBA in self._mapping_table.index:
-            
-            if(memory_type==1):
-                    deviceName = "fastSSD"
-            else:
-                    deviceName = "slowSSD"
             self._mapping_table.at[VBA,"TotalReads"] += 1
             self._mapping_table.at[VBA,"ReadWrite"] = 'Read'
             self._mapping_table.at[VBA,"ReuseDist"] = 0
             self._devices.at[deviceName, "ReadCount"] += 1 
             self._mapping_table.at[VBA,"LatestReadCount"] += 1
-            LBA = self._mapping_table.at[VBA,"LBA"] 
-            #Calculate latency
-            #It is a sequential read, multiply sequential read latency by the number of chunks read
-            
-            #####################START promoteslow_med
-            dname = self._mapping_table.at[request[0],"Device"] #current device
-            if (dname == "slowSSD") and (deviceName == "fastSSD"):
-                logging.debug("\t\t\t[READ]****PROMOTE to FAST****")
-                latency += self.promoteslow_fast(request, False)
-
-            elif (dname == "slowSSD") and (deviceName == "midSSD"):
-                logging.debug("\t\t\t[READ]****PROMOTE To MID****")
-                latency += self.promoteslow_med(request, False)
-
-            elif (dname == "midSSD") and (deviceName == "fastSSD"):
-                logging.debug("\t\t\t[READ]****PROMOTE To MID****")
-                latency += self.promotemid_fast(request, False)
-
-            elif (dname == "fastSSD") and (deviceName == "slowSSD"):
-                logging.debug("\t\t\t[READ] ****EVICT****")
-                latency += self.evictfast_slow(request, False)
-
-            elif (dname == "midSSD") and (deviceName == "slowSSD"):
-                logging.debug("\t\t\t[READ] ****EVICT****")
-                latency += self.evictmid_slow(request, False)
-            
-            elif (dname == "fastSSD") and (deviceName == "midSSD"):
-                logging.debug("\t\t\t[READ] ****EVICT****")
-                latency += self.evictfast_mid(request, False)
-            else:
-                logging.debug("\t\t\t[READ] ****NO MOVE****")
-            #####################END
-            readSize = int(request[1])
+            LBA = self._mapping_table.at[VBA,"LBA"]
+        # otherwise create new mapping
+        else:
+            createMapping == True: #Create new mapping
+            writeCounter = 0
+            readCounter = 1
+            totalWriteCounter = 0
+            totalReadCounter = 1
+            numMigrations1 = 0
+            numMigrations2 = 0
+            numMigrations3 = 0
+            reuse = 0
+            meta_access=0
+            meta_spatial=0
             if deviceName == "slowSSD":
-                start = time.perf_counter()
-                self.my_functions.sibyl_read(self.slowDevice, LBA, readSize)
-                end = time.perf_counter()
-            
-            if deviceName == "fastSSD":
-                start = time.perf_counter()
-                self.my_functions.sibyl_read(self.fastDevice, LBA, readSize)
-                end = time.perf_counter()
+                LBA = int(self.gLBASlow)
+                self.gLBASlow += sizeToMove
+            elif deviceName == "fastSSD": # Fast SSD
+                LBA = int(self.gLBAFast)
+                self.gLBAFast += sizeToMove
+            elif deviceName == "midSSD": # Fast SSD
+                LBA = int(gLBAMid)
+                self.gLBAMid += sizeToMove
+            request_metadata.append(meta_access)
+            request_metadata.append(meta_spatial)
+            request_metadata.append(memory_type)
+            request.append(deviceName)
+            request.append(LBA)
+            request.append(writeCounter)
+            request.append(readCounter)
+            request.append(totalWriteCounter)
+            request.append(totalReadCounter)
+            request.append(numMigrations1)
+            request.append(numMigrations2)
+            request.append(numMigrations3)
+            request.append(0) #Prevaction is Read (0)
+            request.append(memory_type)
+            request.append(reuse)
+            self._devices.at[deviceName, "Filled"] += sizeToMove
+            self._mapping_table.at[VBA] = request[1:]
+            self._mapping_table.at[VBA, "Size"] = sizeToMove
+            self._metadata_table.at[VBA] = request_metadata[0:]
 
-            if deviceName == "midSSD":
-                start = time.perf_counter()
-                self.my_functions.sibyl_read(self.midDevice, LBA, readSize)
-                end = time.perf_counter()
+        #Calculate latency
+        latency = 0
+        #It is a sequential read, multiply sequential read latency by the number of chunks read
+        
+        #####################START promoteslow_med
+        dname = self._mapping_table.at[request[0],"Device"] #current device
+        if (dname == "slowSSD") and (deviceName == "fastSSD"):
+            logging.debug("\t\t\t[READ]****PROMOTE to FAST****")
+            latency += self.promoteslow_fast(request, False)
 
-            latency += (end - start) 
+        elif (dname == "slowSSD") and (deviceName == "midSSD"):
+            logging.debug("\t\t\t[READ]****PROMOTE To MID****")
+            latency += self.promoteslow_med(request, False)
+
+        elif (dname == "midSSD") and (deviceName == "fastSSD"):
+            logging.debug("\t\t\t[READ]****PROMOTE To MID****")
+            latency += self.promotemid_fast(request, False)
+
+        elif (dname == "fastSSD") and (deviceName == "slowSSD"):
+            logging.debug("\t\t\t[READ] ****EVICT****")
+            latency += self.evictfast_slow(request, False)
+
+        elif (dname == "midSSD") and (deviceName == "slowSSD"):
+            logging.debug("\t\t\t[READ] ****EVICT****")
+            latency += self.evictmid_slow(request, False)
+        
+        elif (dname == "fastSSD") and (deviceName == "midSSD"):
+            logging.debug("\t\t\t[READ] ****EVICT****")
+            latency += self.evictfast_mid(request, False)
+        else:
+            logging.debug("\t\t\t[READ] ****NO MOVE****")
+        #####################END
+        readSize = int(request[1])
+        if deviceName == "slowSSD":
+            start = time.perf_counter()
+            self.my_functions.sibyl_read(self.slowDevice, LBA, readSize)
+            end = time.perf_counter()
+        
+        if deviceName == "fastSSD":
+            start = time.perf_counter()
+            self.my_functions.sibyl_read(self.fastDevice, LBA, readSize)
+            end = time.perf_counter()
+
+        if deviceName == "midSSD":
+            start = time.perf_counter()
+            self.my_functions.sibyl_read(self.midDevice, LBA, readSize)
+            end = time.perf_counter()
+
+        latency += (end - start) 
      
         return latency
 

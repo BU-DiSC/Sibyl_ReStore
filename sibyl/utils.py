@@ -1,5 +1,31 @@
 #!/usr/bin/env python
 import tensorflow as tf
+import logging
+
+# Add a function to print loggings from env
+def print_IO_loggings(environment, policy):
+    old_level = logging.getLogger().level  # Save current logging level
+    logging.getLogger().setLevel(logging.DEBUG)  # Enable debug messages
+    # reset timestep to 0 first
+    time_step = environment.reset()
+    # i: num of timestep
+    i=0
+    # run the I/O loop
+    while not time_step.is_last():
+        action_step = policy.action(time_step)
+        time_step = environment.step(action_step.action)
+        i+=1
+    # print the logging info
+    if hasattr(environment, "_debug_info"):
+        print("\n--- I/O running Info ---")
+        for key, value in environment._debug_info.items():
+            print(f"{key}: {value:.6f}")
+        print("------------------\n")
+    else:
+        print("Debug info not available")
+    # Restore original logging level
+    logging.getLogger().setLevel(old_level)
+
 
 def compute_avg_return(environment, policy, num_episodes):
     total_return = 0.0
