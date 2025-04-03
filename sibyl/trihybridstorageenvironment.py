@@ -75,6 +75,10 @@ class TriHybridStorageEnvironment(py_environment.PyEnvironment):
             self._prev_action=1
 
         self._current_perf=self._hybrid.placement(current_state,action)*1e3
+
+    # define a getter for trace_length
+    def get_trace_length(self):
+        return self._hybrid._trace_length
         
     def _step(self, action): 
         """

@@ -17,8 +17,8 @@ def print_IO_loggings(environment, policy):
         time_step = environment.step(action_step.action)
         i+=1
         # comment out this if condition if you want to print all the loggings
-        # CAUTION: this calls the protected env._hybrid._trace_length
-        if i+2 > environment._hybrid._trace_length:
+        # use the getter function to get the trace length
+        if i+2 > environment.get_trace_length():
             # change to debug level only for the last timestep
             logging.getLogger().setLevel(logging.DEBUG)  # Enable debug messages
     
