@@ -31,9 +31,10 @@ class TriHybridStorage():
         self._devices["WriteCount"] = 0
         self._devices["ReadCount"] = 0
         self._devices.set_index('Device', inplace=True)
-        self._devices.at['fastSSD', 'Capacity'] = (2 * 1024 * 1024 * 1024) 
-        self._devices.at['midSSD', 'Capacity'] = (200 * 1024 * 1024 * 1024) 
-        self._devices.at["slowSSD", "Capacity"] = (1.76 * 1024 * 1024 * 1024 * 1024) 
+        # use these capacity settings for MSR_hm_1 (need to be changed for other traces)
+        self._devices.at['fastSSD', 'Capacity'] = (5000 * 4 * 1024) 
+        self._devices.at['midSSD', 'Capacity'] = (15000 * 4 * 1024) 
+        self._devices.at["slowSSD", "Capacity"] = (1024 * 1024 * 1024) 
         self._devices.at["fastSSD", "Filled"] = 0
         self._devices.at["midSSD", "Filled"] = 0
         self._devices.at["slowSSD", "Filled"] = 0
