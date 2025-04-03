@@ -5,16 +5,23 @@ import logging
 # Add a function to print loggings from env
 def print_IO_loggings(environment, policy):
     old_level = logging.getLogger().level  # Save current logging level
-    logging.getLogger().setLevel(logging.DEBUG)  # Enable debug messages
+    
     # reset timestep to 0 first
     time_step = environment.reset()
     # i: num of timestep
     i=0
+
     # run the I/O loop
     while not time_step.is_last():
         action_step = policy.action(time_step)
         time_step = environment.step(action_step.action)
         i+=1
+        # comment out this if condition if you want to print all the loggings
+        # CAUTION: this calls the protected env._hybrid._trace_length
+        if i+2 > environment._hybrid._trace_length:
+            # change to debug level only for the last timestep
+            logging.getLogger().setLevel(logging.DEBUG)  # Enable debug messages
+    
     # print the logging info
     if hasattr(environment, "_debug_info"):
         print("\n--- I/O running Info ---")
