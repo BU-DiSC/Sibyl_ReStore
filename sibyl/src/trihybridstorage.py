@@ -583,7 +583,7 @@ class TriHybridStorage():
             LBA = self._mapping_table.at[VBA,"LBA"]
         # otherwise create new mapping
         else:
-            createMapping == True: #Create new mapping
+            createMapping = True #Create new mapping
             writeCounter = 0
             readCounter = 1
             totalWriteCounter = 0

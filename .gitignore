@@ -1,0 +1,14 @@
+# Ignore Python cache and logs
+__pycache__/
+*.log
+
+# Ignore Python virtual environments
+venv/
+venv3/
+
+# Ignore compiled files and shared libs
+*.so
+
+# Ignore egg-info
+*.egg-info/
+
