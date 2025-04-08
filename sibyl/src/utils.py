@@ -18,7 +18,7 @@ def print_IO_loggings(environment, policy):
         i+=1
         # comment out this if condition if you want to print all the loggings
         # use the getter function to get the trace length
-        if i+2 > environment.get_trace_length():
+        if i + 2 > environment.pyenv.envs[0].get_trace_length():
             # change to debug level only for the last timestep
             logging.getLogger().setLevel(logging.DEBUG)  # Enable debug messages
     

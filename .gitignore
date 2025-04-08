@@ -5,7 +5,7 @@ __pycache__/
 # Ignore Python virtual environments
 venv/
 venv3/
-
+agent/
 # Ignore compiled files and shared libs
 *.so
 
