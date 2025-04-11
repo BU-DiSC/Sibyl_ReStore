@@ -42,12 +42,20 @@ We have tested our environment on block I/O traces from:
 
 
 ## Running
+<del>
 ```
-sibyl execute type_env workload_path driver_path
+sibyl execute type_env workload_path driver_path~~
+```
+</del>
+
+```
+sibyl execute type_env workload_path_train workload_path_eval driver_path
 ```
 `type_env`: Mode of execution. Presently we support dual-HSS (dual) or tri-HSS (tri)
 
-`workload_path`: Path to a workload's storage trace
+~~`workload_path`: Path to a workload's storage trace~~
+
+`workload_path_train(/eval)`: Path to a workload's storage trace for training(/evaluation)
 
 `driver_path`: Path to hybrid storage system driver
 

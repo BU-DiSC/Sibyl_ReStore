@@ -59,13 +59,14 @@ def collect_episode(environment, policy, buffer,episodes,metrics=None):
     dynamic_episode_driver.DynamicEpisodeDriver(environment,policy, observers=observe, num_episodes=episodes).run()
 
 def main(args):
-    trace=args.workload_path
+    trace_train=args.workload_path_train
+    trace_eval =args.workload_path_eval
     # trace = os.path.expanduser(args.workload_path)
-    logging.info("Trace=%s" %trace)
-    if not os.path.isfile(trace):
-        print("[error] %s cannot read" % trace)
+    logging.info("Training Trace=%s" %trace_train)
+    if not os.path.isfile(trace_train):
+        print("[error] %s cannot read" % trace_train)
         exit(1)
-    traceLength= sum(1 for line in open(trace))
+    traceLength= sum(1 for line in open(trace_train))
 
     #Setting hyperparameters
     algo =args.rl_algo # DQN, DDQN, PPO, REINFORCE
@@ -92,11 +93,11 @@ def main(args):
     so_path=args.so_path
     type_env=args.type_env
     if(type_env=="dual"):
-        memEnvironemt = HybridStorageEnvironment(HybridStorage(trace,so_path))
-        testEnvironemt = HybridStorageEnvironment(HybridStorage(trace,so_path))
+        memEnvironemt = HybridStorageEnvironment(HybridStorage(trace_train,so_path))
+        testEnvironemt = HybridStorageEnvironment(HybridStorage(trace_eval,so_path))
     elif(type_env=="tri"):  
-        memEnvironemt = TriHybridStorageEnvironment(TriHybridStorage(trace,so_path))
-        testEnvironemt = TriHybridStorageEnvironment(TriHybridStorage(trace,so_path))
+        memEnvironemt = TriHybridStorageEnvironment(TriHybridStorage(trace_train,so_path))
+        testEnvironemt = TriHybridStorageEnvironment(TriHybridStorage(trace_eval,so_path))
     else:
         logging.error("Unsupported type %s" % type_env)
         exit(1)
@@ -346,7 +347,8 @@ def main(args):
     train_metrics = [num_episodes,env_steps,tf_metrics.MaxReturnMetric(),tf_metrics.ChosenActionHistogram(),tf_metrics.AverageReturnMetric(), tf_metrics.AverageEpisodeLengthMetric()]
 
     # Evaluate the agent's policy once before training.
-    avg_return = compute_avg_return(eval_env, tf_agent.policy, num_eval_episodes)
+    #avg_return = compute_avg_return(eval_env, tf_agent.policy, num_eval_episodes)
+    avg_return = compute_avg_return(train_env, tf_agent.policy, num_eval_episodes)  ##use train_env to evaluate
     returns = [avg_return]
     total_loss=[]
     all_train_loss = []
@@ -379,7 +381,8 @@ def main(args):
             logging.info('step = {}: loss = {}'.format(step, train_loss_in.loss))
 
         if step % eval_interval == 0:
-            avg_return = compute_avg_return(eval_env, tf_agent.policy, num_eval_episodes)
+            #avg_return = compute_avg_return(eval_env, tf_agent.policy, num_eval_episodes)
+            avg_return = compute_avg_return(train_env, tf_agent.policy, num_eval_episodes)  ##use train_env to evaluate
             logging.info('avg_return = {}'.format(avg_return))
             returns.append(avg_return)
 
@@ -413,7 +416,8 @@ def argparser():
         add_help=False
     )
     parser.add_argument("type_env",default="dual")
-    parser.add_argument("workload_path")
+    parser.add_argument("workload_path_train") # split the workload into train and eval(the entire trace)
+    parser.add_argument("workload_path_eval")
     parser.add_argument("so_path")
     group = parser.add_mutually_exclusive_group()
     group.add_argument('--rl_algo', default="DQN")
