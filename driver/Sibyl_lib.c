@@ -17,7 +17,7 @@ int openFastDevice()
 
 int openMiddleDevice()
 {
-	int fp = open("/dev/sdb", O_RDWR|O_SYNC);
+	int fp = open("/dev/nvme1n1", O_RDWR|O_SYNC);
     printf("FP=%d\n", fp);
     if(fp <= 0) {
         perror("Error opening file");
@@ -28,7 +28,7 @@ int openMiddleDevice()
 
 int openSlowDevice()
 {
-	int fp = open("/dev/sda3", O_RDWR|O_SYNC);
+	int fp = open("/dev/nvme2n1", O_RDWR|O_SYNC);
     printf("FP=%d\n", fp);
     if(fp <= 0) {
         perror("Error opening file");
