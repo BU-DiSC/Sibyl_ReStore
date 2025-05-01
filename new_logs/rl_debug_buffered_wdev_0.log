@@ -1,0 +1,38 @@
+05/01/2025 12:33:05 AM root - INFO - Training Trace=/home/femu/data/wdev_0_trim_eval.csv
+05/01/2025 12:33:05 AM root - INFO - RL algo=DQN
+05/01/2025 12:33:05 AM root - INFO - Observation Spec=BoundedArraySpec(shape=(1, 9), dtype=dtype('float64'), name='observation', minimum=-1.7976931348623157e+308, maximum=1.7976931348623157e+308)
+05/01/2025 12:33:05 AM root - INFO - Action Spec=BoundedArraySpec(shape=(), dtype=dtype('int32'), name='action', minimum=0, maximum=1)
+05/01/2025 12:33:05 AM root - INFO - Reward Spec=ArraySpec(shape=(), dtype=dtype('float32'), name='reward')
+05/01/2025 12:33:05 AM absl - WARNING - Importing a function (__inference_polymorphic_distribution_fn_193116968) with ops with custom gradients. Will likely fail if a gradient is requested.
+05/01/2025 12:33:05 AM absl - WARNING - Importing a function (__inference_polymorphic_distribution_fn_193116968) with ops with custom gradients. Will likely fail if a gradient is requested.
+05/01/2025 12:33:05 AM absl - WARNING - Importing a function (__inference_polymorphic_action_fn_193116919) with ops with custom gradients. Will likely fail if a gradient is requested.
+05/01/2025 12:33:05 AM absl - WARNING - Importing a function (__inference_polymorphic_action_fn_193116919) with ops with custom gradients. Will likely fail if a gradient is requested.
+05/01/2025 12:33:05 AM absl - WARNING - Importing a function (__inference_polymorphic_action_fn_193116853) with ops with custom gradients. Will likely fail if a gradient is requested.
+05/01/2025 12:33:05 AM absl - WARNING - Importing a function (__inference_polymorphic_action_fn_193116853) with ops with custom gradients. Will likely fail if a gradient is requested.
+05/01/2025 12:33:05 AM absl - WARNING - Importing a function (__inference_polymorphic_action_fn_193116716) with ops with custom gradients. Will likely fail if a gradient is requested.
+05/01/2025 12:33:05 AM absl - WARNING - Importing a function (__inference_polymorphic_action_fn_193116716) with ops with custom gradients. Will likely fail if a gradient is requested.
+05/01/2025 01:02:52 AM root - DEBUG - *Storage Request (304169/304170)*
+05/01/2025 01:02:52 AM root - DEBUG - 	> Incoming request: [[6.65550848e+08 4.09600000e+03 1.00000000e+00]]
+05/01/2025 01:02:52 AM root - DEBUG - 	> Action: 0
+05/01/2025 01:02:53 AM root - DEBUG - 	> Request type: 1 (1: WRITE, 0: READ)
+05/01/2025 01:02:53 AM root - DEBUG - 	> Observation Vector::Size:0.0036939313984168864, R/W:1.0, Access count:0.000585199066311602,Access interval:0.0, #pages:0.0, #previous:0.0, Filled_Fast:1.79295,Filled_slow:5.0456
+05/01/2025 01:02:53 AM root - DEBUG - 		Total time:472.673644
+05/01/2025 01:02:53 AM root - DEBUG - 		Latency of current request 0.002226
+05/01/2025 01:02:53 AM root - DEBUG - 		Urgent Eviction time 0.000000
+05/01/2025 01:02:53 AM root - DEBUG - 		Filled fast = 1.79295, Filled mid = 5.0456, Filled slow = 0.3234386444091797
+05/01/2025 01:02:53 AM root - DEBUG - 		Total writes to slow device 215044.000000
+05/01/2025 01:02:53 AM root - DEBUG - 		Total writes to fast device 30368.000000
+05/01/2025 01:02:53 AM root - DEBUG - 		Total writes to mid device 8492.000000
+05/01/2025 01:02:53 AM root - DEBUG - 		Promotion to fast device 2196.000000
+05/01/2025 01:02:53 AM root - DEBUG - 		Eviction to mid device 8492.000000
+05/01/2025 01:02:53 AM root - DEBUG - 		Eviction to slow device 3114.000000
+05/01/2025 01:02:53 AM root - DEBUG - 		Invalid pages: 0.000000
+05/01/2025 01:02:53 AM root - DEBUG - 		Total reads from slow device: 50977.000000
+05/01/2025 01:02:53 AM root - DEBUG - 		Total reads from fast device: 19745.000000
+05/01/2025 01:02:53 AM root - DEBUG - 		Total reads from mid device: 0.000000
+05/01/2025 01:02:53 AM root - DEBUG - 	############Action=0, Prev=0, Reward=0.0############
+
+05/01/2025 01:02:53 AM root - DEBUG - *************EPISODE ENDED*************
+05/01/2025 01:02:53 AM root - INFO - Total time elapsed: 29.790873 minutes
+05/01/2025 01:02:53 AM root - INFO - > Ending Evaluation Run
+
