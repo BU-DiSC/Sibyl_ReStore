@@ -174,7 +174,7 @@ class TriHybridStorageEnvironment(py_environment.PyEnvironment):
  
         migrations=self._hybrid._migration
         self._total_migrations+=migrations
-       
+
         numMigrationsForSlowerSSD = self._hybrid._mapping_table['NumMigrationsSSD2'].sum()
         SlowSSDTotalWrites = (numMigrationsForSlowerSSD + self._hybrid._devices.at['slowSSD','WriteCount'])
         numMigrationsForFasterSSD = self._hybrid._mapping_table['NumMigrationsSSD1'].sum()
@@ -182,18 +182,24 @@ class TriHybridStorageEnvironment(py_environment.PyEnvironment):
         numMigrationsForMiddleSSD = self._hybrid._mapping_table['NumMigrationsSSD3'].sum()
         MidSSDTotalWrites = (numMigrationsForMiddleSSD + self._hybrid._devices.at['midSSD','WriteCount'])
         
+        SlowSSDTotalReads = self._hybrid._devices.at['slowSSD','ReadCount']
+        FastSSDTotalReads = self._hybrid._devices.at['fastSSD','ReadCount']
+        MidSSDTotalReads = self._hybrid._devices.at['midSSD','ReadCount']
     
         logging.debug("\t\tTotal time:%f",self._total_perf/1e3)
-        logging.debug("\t\tLatency of current request:%f",self._current_perf/1e3 )
-        logging.debug("\t\tUrgent Eviction time%f", self._hybrid._evictLatency)
-        logging.debug("\t\tFilled fast={}, Filled mid={}, Filled slow={}".format(filledPercent_fast,filledPercent_mid,filledPercent_slow))
-        logging.debug("\t\tTotal writes to slow device%f",SlowSSDTotalWrites)
-        logging.debug("\t\tTotal writes to fast device%f",FastSSDTotalWrites)
-        logging.debug("\t\tTotal writes to mid device%f",MidSSDTotalWrites)
-        logging.debug("\t\tPromotion to fast device%f",numMigrationsForFasterSSD)
-        logging.debug("\t\tEviction to mid device%f",numMigrationsForMiddleSSD)
-        logging.debug("\t\tEviction to slow device%f",numMigrationsForSlowerSSD)
-        logging.debug("\t\tInvalid pages:%f",self._hybrid._invalid_page_fast+self._hybrid._invalid_page_slow)
+        logging.debug("\t\tLatency of current request %f",self._current_perf/1e3 )
+        logging.debug("\t\tUrgent Eviction time %f", self._hybrid._evictLatency)
+        logging.debug("\t\tFilled fast = {}, Filled mid = {}, Filled slow = {}".format(filledPercent_fast,filledPercent_mid,filledPercent_slow))
+        logging.debug("\t\tTotal writes to slow device %f",SlowSSDTotalWrites)
+        logging.debug("\t\tTotal writes to fast device %f",FastSSDTotalWrites)
+        logging.debug("\t\tTotal writes to mid device %f",MidSSDTotalWrites)
+        logging.debug("\t\tPromotion to fast device %f",numMigrationsForFasterSSD)
+        logging.debug("\t\tEviction to mid device %f",numMigrationsForMiddleSSD)
+        logging.debug("\t\tEviction to slow device %f",numMigrationsForSlowerSSD)
+        logging.debug("\t\tInvalid pages: %f",self._hybrid._invalid_page_fast+self._hybrid._invalid_page_slow)
+        logging.debug("\t\tTotal reads from slow device: %f", SlowSSDTotalReads)
+        logging.debug("\t\tTotal reads from fast device: %f", FastSSDTotalReads)
+        logging.debug("\t\tTotal reads from mid device: %f", MidSSDTotalReads)
 
         reward_perf=(0.1/self._current_perf)-self._hybrid.numEvicts**0.09
         reward_perf=self.myround(reward_perf)

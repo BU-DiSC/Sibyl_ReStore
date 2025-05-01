@@ -1,6 +1,44 @@
 #!/usr/bin/env python
 import tensorflow as tf
+import os
 import logging
+import time
+
+
+# def trace_to_each_tier_raw(hybrid, log_file="logs/replay_latencies.csv"):
+
+#     trace_df = pd.read_csv(hybrid.application, names=["offset", "size", "type"], header=None)
+#     trace_df = trace_df[(trace_df["type"] == "Write") & (trace_df["size"] == 4096)]
+#     trace_df = trace_df.astype({"offset": int, "size": int})
+
+#     os.makedirs(os.path.dirname(log_file), exist_ok=True)
+#     gLBA = {
+#         "fast": hybrid.gLBAFast,
+#         "mid": hybrid.gLBAMid,
+#         "slow": hybrid.gLBASlow
+#     }
+
+#     with open(log_file, "w") as f:
+#         f.write("offset,size,tier_name,latency_us\n")
+
+#         for tier_name, device, gLBA_key in [
+#             ("fast", hybrid.fastDevice, "fast"),
+#             ("mid",  hybrid.midDevice,  "mid"),
+#             ("slow", hybrid.slowDevice, "slow"),
+#         ]:
+#             for _, row in trace_df.iterrows():
+#                 offset = row["offset"]
+#                 size = row["size"]
+#                 LBA = int(gLBA[gLBA_key])
+#                 gLBA[gLBA_key] += size  # increment for next write
+
+#                 start = time.perf_counter()
+#                 hybrid.my_functions.sibyl_write(device, LBA, size)
+#                 end = time.perf_counter()
+#                 latency_us = (end - start) * 1e6
+
+#                 f.write(f"{offset},{size},{tier_name},{latency_us:.2f}\n")
+
 
 # Add a function to print loggings from env
 def print_IO_loggings(environment, policy):
@@ -11,6 +49,9 @@ def print_IO_loggings(environment, policy):
     # i: num of timestep
     i=0
 
+    # trace_to_each_tier_raw(environment.pyenv.envs[0])
+
+    start_time = time.time()
     # run the I/O loop
     while not time_step.is_last():
         action_step = policy.action(time_step)
@@ -22,6 +63,13 @@ def print_IO_loggings(environment, policy):
             # change to debug level only for the last timestep
             logging.getLogger().setLevel(logging.DEBUG)  # Enable debug messages
     
+    end_time = time.time()
+    elapsed_seconds = end_time - start_time
+    elapsed_minutes = elapsed_seconds / 60
+    print(f"Total time elapsed: {elapsed_minutes:.6f} minutes")
+    logging.info(f"Total time elapsed: {elapsed_minutes:.6f} minutes")
+
+
     # print the logging info
     if hasattr(environment, "_debug_info"):
         print("\n--- I/O running Info ---")

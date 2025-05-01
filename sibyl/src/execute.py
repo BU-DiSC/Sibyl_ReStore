@@ -112,6 +112,22 @@ def main(args):
     train_env = tf_py_environment.TFPyEnvironment(memEnvironemt)
     eval_env = tf_py_environment.TFPyEnvironment(testEnvironemt)
 
+
+    # ----------------- Added: Eval-only Mode -----------------
+    if args.eval:
+        print("\n----- Evaluation-only Mode -----")
+        try:
+            saved_policy = tf.saved_model.load("sibyl_policy")
+        except Exception as e:
+            print(f"Error loading saved policy: {e}")
+            exit(1)
+        print_IO_loggings(eval_env, saved_policy)
+        eval_env.reset()
+        logging.info("> Ending Evaluation Run\n")
+        return
+    # ----------------------------------------------------------
+
+
     all_train_loss = []
     all_metrics = []
     returns=[]
@@ -429,6 +445,8 @@ def argparser():
     parser.add_argument("--gam", default=0.99, type=float)
     parser.add_argument("--num_itr", default=1000, type=int)
     parser.add_argument("--eval_itr", default=1, type=int)
+    parser.add_argument("--eval", action="store_true", help="Evaluation mode: skip training and load policy")
+
     return parser
 if __name__ == "__main__":
     main()
