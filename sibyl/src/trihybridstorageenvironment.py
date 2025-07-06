@@ -88,7 +88,7 @@ class TriHybridStorageEnvironment(py_environment.PyEnvironment):
             return self.reset()
        
         self._obs = np.zeros((1,3),dtype=np.float64)    
-        self._obs=np.array([self._hybrid._state[self._hybrid._trace_index,:]], dtype=np.float64)
+        self._obs = np.array([self._hybrid._state[self._hybrid._trace_index,:]], dtype=np.float64)
         
         # logging.debug("\t> Total Requests: %d" % )
         logging.debug("*Storage Request ({}/{})*".format(self._hybrid._trace_index,self._hybrid._trace_length))
@@ -153,9 +153,12 @@ class TriHybridStorageEnvironment(py_environment.PyEnvironment):
         
         self._total_evicts+=self._hybrid.numEvicts
         self._obs=self._obs[1:10]
-       
-       
-        self._obs[0]=(self._obs[0]-self._hybrid.size_min)/(self._hybrid.size_max-self._hybrid.size_min) ## NORMALIZING PAGE SIZE
+        
+        # add page size judgement to avoid division by zero
+        if self._hybrid.size_max != self._hybrid.size_min:
+            self._obs[0]=(self._obs[0]-self._hybrid.size_min)/(self._hybrid.size_max-self._hybrid.size_min) ## NORMALIZING PAGE SIZE
+        else:
+            self._obs[0]=1   # if page size is constant, set it to 1
        
         self._total_perf+=self._current_perf
 

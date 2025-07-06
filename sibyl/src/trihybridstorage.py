@@ -7,7 +7,7 @@ from ctypes import *
 
 import logging
 class TriHybridStorage():
-    def __init__(self,application,driver_path):  
+    def __init__(self,application,driver_path,tier1_cap,tier2_cap):  
         self.application=application
         so_file = driver_path
         self.my_functions = CDLL(so_file)
@@ -31,10 +31,12 @@ class TriHybridStorage():
         self._devices["WriteCount"] = 0
         self._devices["ReadCount"] = 0
         self._devices.set_index('Device', inplace=True)
-        # use these capacity settings for MSR_hm_1 (need to be changed for other traces)
-        self._devices.at['fastSSD', 'Capacity'] = (5000 * 4 * 1024) 
-        self._devices.at['midSSD', 'Capacity'] = (15000 * 4 * 1024) 
-        self._devices.at["slowSSD", "Capacity"] = (1024 * 1024 * 1024) 
+        # define tiers' capacity from input arguments
+        self.tier1_cap = tier1_cap
+        self.tier2_cap = tier2_cap
+        self._devices.at['fastSSD', 'Capacity'] = (self.tier1_cap * 4 * 1024) 
+        self._devices.at['midSSD', 'Capacity'] = (self.tier2_cap * 4 * 1024) 
+        self._devices.at["slowSSD", "Capacity"] = (1024 * 1024 * 4 * 1024)      # Tier3 is large enough
         self._devices.at["fastSSD", "Filled"] = 0
         self._devices.at["midSSD", "Filled"] = 0
         self._devices.at["slowSSD", "Filled"] = 0
@@ -95,9 +97,9 @@ class TriHybridStorage():
         self._devices["WriteCount"] = 0
         self._devices["ReadCount"] = 0
         self._devices.set_index('Device', inplace=True)
-        self._devices.at['fastSSD', 'Capacity'] = (5000 * 4 * 1024) 
-        self._devices.at['midSSD', 'Capacity'] = (15000 * 4 * 1024) 
-        self._devices.at["slowSSD", "Capacity"] = (1024 * 1024 * 1024) # is the size of the slow SSD
+        self._devices.at['fastSSD', 'Capacity'] = (self.tier1_cap * 4 * 1024) 
+        self._devices.at['midSSD', 'Capacity'] = (self.tier2_cap * 4 * 1024) 
+        self._devices.at["slowSSD", "Capacity"] = (1024 * 1024 * 4 * 1024)      # Tier3 is large enough
         self._devices.at["fastSSD", "Filled"] = 0
         self._devices.at["midSSD", "Filled"] = 0
         self._devices.at["slowSSD", "Filled"] = 0

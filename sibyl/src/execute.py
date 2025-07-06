@@ -92,12 +92,15 @@ def main(args):
     orig_stdout = sys.stdout
     so_path=args.so_path
     type_env=args.type_env
+    # load Tiers' capacity from args
+    tier1_cap = args.tier1_cap
+    tier2_cap = args.tier2_cap
     if(type_env=="dual"):
         memEnvironemt = HybridStorageEnvironment(HybridStorage(trace_train,so_path))
         testEnvironemt = HybridStorageEnvironment(HybridStorage(trace_eval,so_path))
     elif(type_env=="tri"):  
-        memEnvironemt = TriHybridStorageEnvironment(TriHybridStorage(trace_train,so_path))
-        testEnvironemt = TriHybridStorageEnvironment(TriHybridStorage(trace_eval,so_path))
+        memEnvironemt = TriHybridStorageEnvironment(TriHybridStorage(trace_train,so_path,tier1_cap,tier2_cap))
+        testEnvironemt = TriHybridStorageEnvironment(TriHybridStorage(trace_eval,so_path,tier1_cap,tier2_cap))
     else:
         logging.error("Unsupported type %s" % type_env)
         exit(1)
@@ -445,6 +448,8 @@ def argparser():
     parser.add_argument("--gam", default=0.99, type=float)
     parser.add_argument("--num_itr", default=1000, type=int)
     parser.add_argument("--eval_itr", default=1, type=int)
+    parser.add_argument("--tier1_cap", default=100, type=int, help="Max capacity of Tier1, in number of pages")
+    parser.add_argument("--tier2_cap", default=400, type=int, help="Max capacity of Tier2, in number of pages")
     parser.add_argument("--eval", action="store_true", help="Evaluation mode: skip training and load policy")
 
     return parser
